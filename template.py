@@ -6,7 +6,9 @@ logging.basicConfig(level=logging.INFO)
 
 project_name = "Named_Entity_Recognition"
 
-list_of_file = [
+list_of_files = [
+    "github/workflows/.gitkeep",
+    
     f"src/{project_name}/__init__.py",
     f"src/{project_name}/components/__init__.py",
     f"src/{project_name}/components/data_ingestion.py",
@@ -20,6 +22,11 @@ list_of_file = [
     f"src/{project_name}/exception.py",
     f"src/{project_name}/logger.py",
     f"src/{project_name}/utils.py",
+
+    f"notebooks/data/.gitkeep",
+    f"notebooks/{project_name}_EDA.ipynb",
+    f"notebooks/{project_name}_MODELING.ipynb",
+
     "app.py",
     "Dockerfile",
     "requirements.txt",
@@ -28,7 +35,7 @@ list_of_file = [
 
 ]
 
-for filepath in list_of_file:
+for filepath in list_of_files:
     filepath = Path(filepath)
     filedir, filename = os.path.split(filepath)
 
