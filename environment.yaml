@@ -1,0 +1,30 @@
+name: ner_env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9.13
+  - pip
+  - numpy
+  - pandas
+  - scikit-learn
+  - tqdm
+  - matplotlib
+  - seaborn
+  - jupyterlab
+  - ipywidgets
+  - pip:
+      - transformers==4.62.4
+      - datasets==3.6.0
+      - accelerate==1.7.0
+      - fastapi==0.115.12
+      - uvicorn==0.34.3
+      - seqeval==1.2.2
+      - torch
+      - torchvision
+      - torchaudio
+      - wandb
+      - sentencepiece
+      - tokenizers
+      - evaluate
+      - ipykernel

@@ -1,0 +1,8 @@
+artifacts/
+env/
+logs/
+notebooks/
+.gitignore
+README.md
+demo.py
+LICENSE

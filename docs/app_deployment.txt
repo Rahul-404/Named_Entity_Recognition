@@ -1,0 +1,68 @@
+Once we done with environment, we can deploy the app
+
+# Deployment Workflow: GitHub Actions → AWS EC2
+
+1. Prerequisites:
+   - AWS EC2 instance (Ubuntu recommended)
+   - SSH access (key pair configured)
+   - AWS security group allowing SSH (22), HTTP (80), HTTPS (443) or custom ports (e.g., 8000 for FastAPI)
+   - Install Docker or dependencies manually on EC2
+   - Domain name setup (optional)
+
+2. Secrets to add in GitHub Repo (Settings → Secrets → Actions):
+   - AWS_HOST        → Public IP or domain of EC2
+   - AWS_USER        → usually 'ubuntu' or 'ec2-user'
+   - SSH_PRIVATE_KEY → contents of your private SSH key (~/.ssh/id_rsa)
+
+3. Directory structure:
+   - .github/workflows/deploy.yml → GitHub Actions CI/CD file
+   - Dockerfile OR start.sh / requirements.txt → for your app
+   - deploy.sh → (optional) script for EC2 to build & restart the app
+
+4. Example Deployment Steps:
+
+Step 1: Push code → triggers GitHub Actions → SSH into EC2 → pulls latest code → restarts app.
+
+5. Example Workflow Summary:
+
+- name: Deploy to AWS EC2
+  on:
+    push:
+      branches:
+        - main
+  jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Setup SSH
+          uses: webfactory/ssh-agent@v0.8.0
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        - name: Deploy via SSH
+          run: |
+            ssh -o StrictHostKeyChecking=no ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
+              cd ~/app-folder
+              git pull origin main
+              docker-compose down
+              docker-compose up -d --build
+              # or
+              # pip install -r requirements.txt
+              # uvicorn main:app --host 0.0.0.0 --port 8000
+            EOF
+
+6. Monitoring & Logs:
+   - SSH into EC2 and check logs:
+     docker logs <container_name>  # for Docker
+     or
+     journalctl -u myservice       # for systemd
+     or
+     tail -f log files             # for manual setups
+
+7. Rollback strategy:
+   - Always keep last stable version tagged in GitHub.
+   - Consider automated backups of data if used in production.
+
