@@ -1,7 +1,7 @@
 import os, sys
 from ner.utils import read_config
 from ner.exception import CustomeException
-from ner.entity.config_entity import DataIngestionConfig, DataValidtaionConfig, DataPreprocessingConfig, ModelTrainerConfig
+from ner.entity.config_entity import DataIngestionConfig, DataValidtaionConfig, DataPreprocessingConfig, ModelTrainerConfig, PredictionPipelineConfig
 from ner.constants import *
 from transformers import AutoConfig, AutoTokenizer
 from ner.logger import logger
@@ -107,5 +107,26 @@ class Configuration:
                 output_dir=output_dir
             )
             return model_train_config
+        except Exception as e:
+            raise CustomeException(e, sys)
+        
+    def get_model_predict_pipeline_config(self):
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(self.config[BASE_MODEL_CONFIG][BASE_MODEL_NAME])
+            truncation = self.config[PREDICT_MODEL_CONFIG][TRUNCATION]
+            is_split_into_words = self.config[PREDICT_MODEL_CONFIG][IS_SPLIT_INTO_WORDS]
+            output_dir = os.path.join(os.getcwd(), ARTIFACTS_KEY, MODEL_WEIGHT_KEY)
+            tags = self.config[DATA_PREPROCESSING_KEY][NER_TAGS_KEY]
+
+            index2tag = {idx: tag for idx, tag in enumerate(tags)}
+            tag2index = {tag: idx for idx, tag in enumerate(tags)}
+            predict_pipeline_config = PredictionPipelineConfig(tokenizer=tokenizer,
+                                                                truncation=truncation,
+                                                                is_split_into_words=is_split_into_words,
+                                                                output_dir=output_dir,
+                                                                index2tag=index2tag,
+                                                                tag2index=tag2index,
+                                                                tags=tags)
+            return predict_pipeline_config
         except Exception as e:
             raise CustomeException(e, sys)
