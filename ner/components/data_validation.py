@@ -73,14 +73,14 @@ class DataValidation:
         except Exception as e:
             raise CustomeException(e, sys)
         
-    def run_all_checks(self) -> Dict[str, bool]:
+    def run_all_checks(self) -> List[bool]:
         try:
             logger.info("Running all data validation checks...")
-            results = {
-                "columns_check": self.check_columns_names(),
-                "type_check": self.type_check(),
-                "null_check": self.null_check()
-            }
+            results = [
+                self.check_columns_names(),
+                self.type_check(),
+                self.null_check()
+            ]
             logger.info(f"Data Validation Results: {results}")
             return results
         except Exception as e:
