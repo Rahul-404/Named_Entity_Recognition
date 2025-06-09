@@ -10,3 +10,6 @@ DataPreprocessingConfig = namedtuple('DataPreprocessingConfig', ["model_name", "
 ModelTrainerConfig = namedtuple('ModelTrainerConfig', ["model_name", "index2tag", "tag2index",
                                                        "tokenizer", "xlmr_config", "epochs",
                                                        "batch_size", "save_steps", "output_dir"])
+
+PredictionPipelineConfig = namedtuple('PredictionPipelineConfig', ["tokenizer", "truncation", "is_split_into_words",
+                                                                   "output_dir", "index2tag", "tag2index", "tags"])
