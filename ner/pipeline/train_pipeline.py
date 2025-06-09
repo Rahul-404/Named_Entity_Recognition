@@ -54,7 +54,7 @@ class TrainPipeline:
         except Exception as e:
             raise CustomeException(e, sys)
         
-    def validate_check(check):
+    def validate_check(self, check):
         for i in check:
             if i == False:
                 return False
