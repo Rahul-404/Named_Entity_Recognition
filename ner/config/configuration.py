@@ -1,7 +1,7 @@
 import os, sys
 from ner.utils import read_config
 from ner.exception import CustomeException
-from ner.entity.config_entity import DataIngestionConfig, DataValidtaionConfig, DataPreprocessingConfig
+from ner.entity.config_entity import DataIngestionConfig, DataValidtaionConfig, DataPreprocessingConfig, ModelTrainerConfig
 from ner.constants import *
 from transformers import AutoConfig, AutoTokenizer
 from ner.logger import logger
@@ -73,3 +73,39 @@ class Configuration:
             return data_preprocessing_config
         except Exception as e:
             raise CustomeException(e, sys) 
+        
+    def get_model_trainer_config(self):
+        try:
+            model_name = self.config[BASE_MODEL_CONFIG][BASE_MODEL_NAME]
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+            tags = self.config[DATA_PREPROCESSING_KEY][NER_TAGS_KEY]
+
+            index2tag = {index: tag for index, tag in enumerate(tags)}
+            tag2index = {tag: index for index, tag in enumerate(tags)}
+
+            xlmr_config = AutoConfig.from_pretrained(model_name,
+                                                     num_labels = self.config[BASE_MODEL_CONFIG][NUM_LABELS],
+                                                     id2labels = index2tag,
+                                                     labels2id = tag2index)
+            
+            epochs = self.config[BASE_MODEL_CONFIG][NUM_EPOCHS]
+            batch_size = self.config[BASE_MODEL_CONFIG][BATCH_SIZE]
+            save_steps = self.config[BASE_MODEL_CONFIG][SAVE_STEPS]
+            
+            output_dir = os.path.join(s.getcwd(), ARTIFACTS_KEY, MODEL_WEIGHT_KEY)
+
+            model_train_config = ModelTrainerConfig(
+                model_name=model_name,
+                index2tag = index2tag,
+                tag2index = tag2index,
+                tokenizer=tokenizer,
+                xlmr_config=xlmr_config,
+                epochs=epochs,
+                batch_size=batch_size,
+                save_steps=save_steps,
+                output_dir=output_dir
+            )
+            return model_train_config
+        except Exception as e:
+            raise CustomeException(e, sys)
