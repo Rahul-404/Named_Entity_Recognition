@@ -85,7 +85,7 @@ class Configuration:
             tag2index = {tag: index for index, tag in enumerate(tags)}
 
             xlmr_config = AutoConfig.from_pretrained(model_name,
-                                                     num_labels = self.config[BASE_MODEL_CONFIG][NUM_LABELS],
+                                                     num_labels = self.config[BASE_MODEL_CONFIG][NUM_CLASSES],
                                                      id2labels = index2tag,
                                                      labels2id = tag2index)
             
@@ -93,7 +93,7 @@ class Configuration:
             batch_size = self.config[BASE_MODEL_CONFIG][BATCH_SIZE]
             save_steps = self.config[BASE_MODEL_CONFIG][SAVE_STEPS]
             
-            output_dir = os.path.join(s.getcwd(), ARTIFACTS_KEY, MODEL_WEIGHT_KEY)
+            output_dir = os.path.join(os.getcwd(), ARTIFACTS_KEY, MODEL_WEIGHT_KEY)
 
             model_train_config = ModelTrainerConfig(
                 model_name=model_name,
