@@ -15,14 +15,16 @@ class DataPreprocessing:
     def create_tag_name(self, batch):
         return {"ner_tags_str": [self.data_preprocessing_config.index2tag[idx] for idx in batch["ner_tags"]]}
     
-    def tokenize_and_align_labels(examples):
+    def tokenize_and_align_labels(self, data):
         try:
             logger.info("Tokenizing and aligning labels...")
-            tokenized_inputs = xlmr_tokenizer(examples["tokens"], truncation=True, 
+            tokenizer = self.data_preprocessing_config.tokenizer
+
+            tokenized_inputs = tokenizer(data["tokens"], truncation=True, 
                                             is_split_into_words=True)
             labels = []
 
-            for idx, label in enumerate(examples["ner_tags"]):
+            for idx, label in enumerate(data["ner_tags"]):
                 word_ids = tokenized_inputs.word_ids(batch_index=idx)
                 previous_word_idx = None
                 label_ids = []
@@ -42,15 +44,17 @@ class DataPreprocessing:
         
     def encode_en_dataset(self, corpus):
         try:
-            return corpus.map(self.tokenize_and_align_labels, batched=True, 
-                            remove_columns=['langs', 'ner_tags', 'tokens'])
+            return corpus.map(self.tokenize_and_align_labels, 
+                              batched=True, 
+                              remove_columns=['langs', 'ner_tags', 'tokens']
+                            )
         except Exception as e:   
             raise CustomeException(e, sys)    
         
-    def preprare_data_for_finetuning(self) -> Dict:
+    def prepare_data_for_fine_tuning(self) -> Dict:
         try:
-            self.data = self.data.mao(self.create_tag_name)
+            self.data = self.data.map(self.create_tag_name)
             panx_en_encoded = self.encode_en_dataset(self.data)
             return panx_en_encoded
         except Exception as e:
-            raise CustomeException(e, sys)  
+            raise CustomeException(e, sys)
