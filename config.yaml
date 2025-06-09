@@ -16,9 +16,13 @@ data_validation_config:
     - validation
 
   type_check:
-    - 
+    - object
+    - object
+    - object
 
   null_check:
+    - 0
+
 
   columns_check:
     - tokens
