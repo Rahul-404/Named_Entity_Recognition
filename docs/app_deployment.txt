@@ -66,3 +66,23 @@ Step 1: Push code → triggers GitHub Actions → SSH into EC2 → pulls latest 
    - Always keep last stable version tagged in GitHub.
    - Consider automated backups of data if used in production.
 
+
+- self-hosted runner
+
+mkdir actions-runner && cd actions-runner
+
+curl -o actions-runner-linux-x64-2.325.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.325.0/actions-runner-linux-x64-2.325.0.tar.gz
+
+echo "5020da7139d85c776059f351e0de8fdec753affc9c558e892472d43ebeb518f4  actions-runner-linux-x64-2.325.0.tar.gz" | shasum -a 256 -c
+
+tar xzf ./actions-runner-linux-x64-2.325.0.tar.gz
+
+- configure
+
+./config.sh --url https://github.com/Rahul-404/Named_Entity_Recognition --token AM4AJABBWSYJ6ULEJZB5VUTII5GGQ
+
+./run.sh
+
+Using your self-hosted runner
+
+runs-on: self-hosted
